@@ -6,7 +6,11 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "build:github-pages": "ng build --configuration production --base-href /",
+    "deploy:github-pages": "npm run build:github-pages && npx angular-cli-ghpages --dir=dist/maintena-sync/browser --cname=preventive-maintenance.sharpfloornc.com",
+    "deploy:docs": "ng build --configuration github-pages && npm run copy-to-docs",
+    "copy-to-docs": "rimraf docs && mkdir docs && xcopy dist\\maintena-sync\\browser docs /E /I"
   },
   "private": true,
   "dependencies": {
@@ -29,6 +33,7 @@
     "@angular/cli": "^17.2.3",
     "@angular/compiler-cli": "^17.2.0",
     "@types/jasmine": "~5.1.0",
+    "angular-cli-ghpages": "^2.0.3",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
