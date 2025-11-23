@@ -1,0 +1,46 @@
+.new-task-dialog {
+  max-width: 90vw;
+}
+
+.form-section {
+  margin-bottom: 24px;
+  
+  .section-title {
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+}
+
+.form-row {
+  margin-bottom: 16px;
+
+  &.two-columns {
+    display: flex;
+    gap: 16px;
+
+    mat-form-field {
+      flex: 1;
+    }
+  }
+
+  .full-width {
+    width: 100%;
+  }
+}
+
+.dialog-actions {
+  button mat-icon {
+    margin-right: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .new-task-dialog {
+    width: 95vw;
+  }
+  
+  .form-row.two-columns {
+    flex-direction: column;
+    gap: 12px;
+  }
+}

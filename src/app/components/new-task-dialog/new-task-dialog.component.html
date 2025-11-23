@@ -1,0 +1,201 @@
+<div class="new-task-dialog">
+  <h2 mat-dialog-title>
+    <mat-icon class="dialog-icon">add_task</mat-icon>
+    Create New Maintenance Task
+  </h2>
+
+  <mat-dialog-content class="dialog-content">
+    <form [formGroup]="taskForm" class="task-form">
+      <!-- Basic Information Section -->
+      <div class="form-section">
+        <h3 class="section-title">Basic Information</h3>
+        
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Task Title</mat-label>
+            <input matInput 
+                   formControlName="title" 
+                   placeholder="e.g., Oil Change, Filter Replacement">
+            <mat-icon matSuffix>title</mat-icon>
+            <mat-error *ngIf="taskForm.get('title')?.invalid && taskForm.get('title')?.touched">
+              {{getFieldError('title')}}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput 
+                      formControlName="description"
+                      rows="3"
+                      placeholder="Detailed description of the maintenance task..."></textarea>
+            <mat-icon matSuffix>description</mat-icon>
+            <mat-error *ngIf="taskForm.get('description')?.invalid && taskForm.get('description')?.touched">
+              {{getFieldError('description')}}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row two-columns">
+          <mat-form-field appearance="outline">
+            <mat-label>Task Type</mat-label>
+            <mat-select formControlName="taskType">
+              <mat-option *ngFor="let type of taskTypes" [value]="type">
+                {{type}}
+              </mat-option>
+            </mat-select>
+            <mat-icon matSuffix>category</mat-icon>
+            <mat-error *ngIf="taskForm.get('taskType')?.invalid && taskForm.get('taskType')?.touched">
+              {{getFieldError('taskType')}}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Priority</mat-label>
+            <mat-select formControlName="priority">
+              <mat-option *ngFor="let priority of priorities" [value]="priority">
+                <span [ngClass]="'priority-option priority-' + priority.toLowerCase()">
+                  {{priority}}
+                </span>
+              </mat-option>
+            </mat-select>
+            <mat-icon matSuffix>flag</mat-icon>
+            <mat-error *ngIf="taskForm.get('priority')?.invalid && taskForm.get('priority')?.touched">
+              {{getFieldError('priority')}}
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Equipment and Assignment Section -->
+      <div class="form-section">
+        <h3 class="section-title">Equipment & Assignment</h3>
+        
+        <div class="form-row two-columns">
+          <mat-form-field appearance="outline">
+            <mat-label>Equipment</mat-label>
+            <mat-select formControlName="equipmentId">
+              <mat-option *ngFor="let equipment of equipmentList" [value]="equipment.id">
+                {{equipment.name}}
+              </mat-option>
+            </mat-select>
+            <mat-icon matSuffix>precision_manufacturing</mat-icon>
+            <mat-error *ngIf="taskForm.get('equipmentId')?.invalid && taskForm.get('equipmentId')?.touched">
+              {{getFieldError('equipmentId')}}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Location</mat-label>
+            <mat-select formControlName="location">
+              <mat-option *ngFor="let location of locations" [value]="location">
+                {{location}}
+              </mat-option>
+            </mat-select>
+            <mat-icon matSuffix>place</mat-icon>
+            <mat-error *ngIf="taskForm.get('location')?.invalid && taskForm.get('location')?.touched">
+              {{getFieldError('location')}}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Assigned Technician</mat-label>
+            <mat-select formControlName="assignedTo">
+              <mat-option *ngFor="let technician of technicians" [value]="technician">
+                {{technician}}
+              </mat-option>
+            </mat-select>
+            <mat-icon matSuffix>person</mat-icon>
+            <mat-error *ngIf="taskForm.get('assignedTo')?.invalid && taskForm.get('assignedTo')?.touched">
+              {{getFieldError('assignedTo')}}
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Scheduling and Resources Section -->
+      <div class="form-section">
+        <h3 class="section-title">Scheduling & Resources</h3>
+        
+        <div class="form-row two-columns">
+          <mat-form-field appearance="outline">
+            <mat-label>Scheduled Date</mat-label>
+            <input matInput 
+                   [matDatepicker]="picker" 
+                   formControlName="scheduledDate"
+                   [min]="minDate">
+            <mat-hint>Choose the date for this task</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error *ngIf="taskForm.get('scheduledDate')?.invalid && taskForm.get('scheduledDate')?.touched">
+              {{getFieldError('scheduledDate')}}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Estimated Duration (hours)</mat-label>
+            <input matInput 
+                   type="number" 
+                   formControlName="estimatedDuration"
+                   step="0.5"
+                   min="0.5"
+                   max="24">
+            <mat-icon matSuffix>schedule</mat-icon>
+            <mat-hint>Time needed to complete this task</mat-hint>
+            <mat-error *ngIf="taskForm.get('estimatedDuration')?.invalid && taskForm.get('estimatedDuration')?.touched">
+              {{getFieldError('estimatedDuration')}}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Estimated Cost (Optional)</mat-label>
+            <input matInput 
+                   type="number" 
+                   formControlName="estimatedCost"
+                   step="1"
+                   min="0">
+            <span matTextPrefix>$&nbsp;</span>
+            <mat-icon matSuffix>attach_money</mat-icon>
+            <mat-hint>Estimated cost for materials and labor</mat-hint>
+            <mat-error *ngIf="taskForm.get('estimatedCost')?.invalid && taskForm.get('estimatedCost')?.touched">
+              {{getFieldError('estimatedCost')}}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Additional Notes (Optional)</mat-label>
+            <textarea matInput 
+                      formControlName="notes"
+                      rows="2"
+                      placeholder="Any special instructions or notes..."></textarea>
+            <mat-icon matSuffix>note</mat-icon>
+          </mat-form-field>
+        </div>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-button type="button" (click)="onCancel()" class="cancel-btn">
+      <mat-icon>cancel</mat-icon>
+      Cancel
+    </button>
+    
+    <button mat-raised-button 
+            color="primary" 
+            type="submit" 
+            (click)="onSubmit()"
+            [disabled]="taskForm.invalid"
+            class="submit-btn">
+      <mat-icon>add_task</mat-icon>
+      Create Task
+    </button>
+  </mat-dialog-actions>
+</div>

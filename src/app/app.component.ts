@@ -6,5 +6,6 @@ import { Component } from '@angular/core';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'maintena-sync';
+  title = 'MainteSync';
+  notificationCount = 5; // Example notification count
 }
