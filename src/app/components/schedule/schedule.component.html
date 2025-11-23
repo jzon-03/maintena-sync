@@ -1,0 +1,226 @@
+<div class="schedule-container">
+  <!-- Header Section -->
+  <div class="schedule-header">
+    <h1>Maintenance Schedule</h1>
+    <p class="subtitle">Manage and track scheduled maintenance tasks</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon today">today</mat-icon>
+          <div class="stat-info">
+            <h3>{{getTasksCount().today}}</h3>
+            <p>Today's Tasks</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon week">date_range</mat-icon>
+          <div class="stat-info">
+            <h3>{{getTasksCount().thisWeek}}</h3>
+            <p>This Week</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon total">event_note</mat-icon>
+          <div class="stat-info">
+            <h3>{{getTasksCount().total}}</h3>
+            <p>Total Scheduled</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon overdue">warning</mat-icon>
+          <div class="stat-info">
+            <h3>{{getTasksCount().overdue}}</h3>
+            <p>Overdue</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="schedule-content">
+    <!-- Calendar Section -->
+    <div class="calendar-section">
+      <mat-card class="calendar-card">
+        <mat-card-header>
+          <div class="calendar-header">
+            <div class="calendar-navigation">
+              <button mat-icon-button (click)="previousMonth()">
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+              
+              <h2 class="calendar-title">
+                {{months[currentDate.getMonth()]}} {{currentDate.getFullYear()}}
+              </h2>
+              
+              <button mat-icon-button (click)="nextMonth()">
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            </div>
+            
+            <button mat-raised-button color="primary" (click)="goToToday()">
+              <mat-icon>today</mat-icon>
+              Today
+            </button>
+          </div>
+        </mat-card-header>
+
+        <mat-card-content class="calendar-content">
+          <!-- Calendar Header (Days of Week) -->
+          <div class="calendar-grid">
+            <div class="calendar-header-row">
+              <div *ngFor="let day of weekDays" class="day-header">
+                {{day.substr(0, 3)}}
+              </div>
+            </div>
+
+            <!-- Calendar Days -->
+            <div class="calendar-days">
+              <div *ngFor="let day of calendarDays" 
+                   class="calendar-day"
+                   [ngClass]="{
+                     'other-month': !day.isCurrentMonth,
+                     'today': day.isToday,
+                     'weekend': day.isWeekend,
+                     'selected': isSameDate(day.date, selectedDate),
+                     'has-tasks': day.tasks.length > 0
+                   }"
+                   (click)="selectDate(day)">
+                
+                <span class="day-number">{{day.date.getDate()}}</span>
+                
+                <div *ngIf="day.tasks.length > 0" class="task-indicators">
+                  <div *ngFor="let task of day.tasks.slice(0, 3)" 
+                       class="task-dot"
+                       [ngClass]="'priority-' + task.priority.toLowerCase()">
+                  </div>
+                  <span *ngIf="day.tasks.length > 3" class="more-tasks">
+                    +{{day.tasks.length - 3}}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Sidebar with Task Details -->
+    <div class="sidebar-section">
+      <!-- Selected Day Tasks -->
+      <mat-card class="selected-day-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>event</mat-icon>
+            {{selectedDate | date:'EEEE, MMM d'}}
+          </mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div *ngIf="getSelectedDayTasks().length === 0" class="no-tasks">
+            <mat-icon>event_available</mat-icon>
+            <p>No tasks scheduled</p>
+          </div>
+          
+          <div *ngFor="let task of getSelectedDayTasks()" class="task-item">
+            <div class="task-header">
+              <span class="task-time">{{task.startTime}} - {{task.endTime}}</span>
+              <span class="task-priority" [ngClass]="'priority-' + task.priority.toLowerCase()">
+                {{task.priority}}
+              </span>
+            </div>
+            
+            <h4 class="task-title">{{task.title}}</h4>
+            
+            <div class="task-details">
+              <div class="task-detail">
+                <mat-icon>precision_manufacturing</mat-icon>
+                {{task.equipmentName}}
+              </div>
+              <div class="task-detail">
+                <mat-icon>person</mat-icon>
+                {{task.technician}}
+              </div>
+              <div class="task-detail">
+                <mat-icon>place</mat-icon>
+                {{task.location}}
+              </div>
+            </div>
+            
+            <div class="task-status">
+              <span class="status-badge" [ngClass]="'status-' + task.status.toLowerCase().replace(' ', '-')">
+                {{task.status}}
+              </span>
+              <span class="task-type">{{task.type}}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Today's Tasks -->
+      <mat-card class="today-tasks-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>today</mat-icon>
+            Today's Tasks
+          </mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div *ngIf="todaysTasks.length === 0" class="no-tasks">
+            <mat-icon>check_circle</mat-icon>
+            <p>No tasks today</p>
+          </div>
+          
+          <div *ngFor="let task of todaysTasks" class="task-summary">
+            <div class="task-summary-header">
+              <span class="time">{{task.startTime}}</span>
+              <span class="priority-dot" [ngClass]="'priority-' + task.priority.toLowerCase()"></span>
+            </div>
+            <h5>{{task.title}}</h5>
+            <p>{{task.equipmentName}} • {{task.technician}}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Upcoming Tasks -->
+      <mat-card class="upcoming-tasks-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>schedule</mat-icon>
+            Upcoming Tasks
+          </mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div *ngFor="let task of upcomingTasks" class="task-summary">
+            <div class="task-summary-header">
+              <span class="date">{{task.date | date:'MMM d'}}</span>
+              <span class="priority-dot" [ngClass]="'priority-' + task.priority.toLowerCase()"></span>
+            </div>
+            <h5>{{task.title}}</h5>
+            <p>{{task.equipmentName}} • {{task.technician}}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

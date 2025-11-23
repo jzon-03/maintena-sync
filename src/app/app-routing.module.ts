@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { RootComponent } from './components/root/root.component';
 import { EquipmentComponent } from './components/equipment/equipment.component';
 import { MaintenanceTasksComponent } from './components/maintenance-tasks/maintenance-tasks.component';
+import { ScheduleComponent } from './components/schedule/schedule.component';
+import { PartsInventoryComponent } from './components/parts-inventory/parts-inventory.component';
 
 const routes: Routes = [
   {
@@ -13,6 +15,12 @@ const routes: Routes = [
   },
   {
     path: 'maintenance-tasks', component: MaintenanceTasksComponent
+  },
+  {
+    path: 'schedule', component: ScheduleComponent
+  },
+  {
+    path: 'inventory', component: PartsInventoryComponent
   }
 ];
 

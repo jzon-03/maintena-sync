@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
+import { LayoutModule } from '@angular/cdk/layout';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -10,6 +11,8 @@ import { MaterialModule } from './shared/material.module';
 import { EquipmentComponent } from './components/equipment/equipment.component';
 import { MaintenanceTasksComponent } from './components/maintenance-tasks/maintenance-tasks.component';
 import { NewTaskDialogComponent } from './components/new-task-dialog/new-task-dialog.component';
+import { ScheduleComponent } from './components/schedule/schedule.component';
+import { PartsInventoryComponent } from './components/parts-inventory/parts-inventory.component';
 
 @NgModule({
   declarations: [
@@ -17,13 +20,16 @@ import { NewTaskDialogComponent } from './components/new-task-dialog/new-task-di
     RootComponent,
     EquipmentComponent,
     MaintenanceTasksComponent,
-    NewTaskDialogComponent
+    NewTaskDialogComponent,
+    ScheduleComponent,
+    PartsInventoryComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     MaterialModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    LayoutModule
   ],
   providers: [
     provideAnimationsAsync()
