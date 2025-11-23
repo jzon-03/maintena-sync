@@ -4,12 +4,23 @@
 
 .maintenance-app .sidenav-container {
   height: 100%;
+  position: relative;
 }
 
 .maintenance-app .sidenav {
   width: 280px;
   background-color: #fafafa;
   border-right: 1px solid #e0e0e0;
+  z-index: 1000;
+  
+  // Ensure proper mobile behavior
+  &.mat-drawer-over {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100vh !important;
+    box-shadow: 0 8px 10px -5px rgba(0,0,0,0.2), 0 16px 24px 2px rgba(0,0,0,0.14), 0 6px 30px 5px rgba(0,0,0,0.12);
+  }
 }
 
 .maintenance-app .sidenav .toolbar-title {
@@ -87,5 +98,45 @@
     .sidenav {
       width: 100%;
     }
+  }
+}
+// Mobile responsive styles
+@media (max-width: 768px) {
+  .maintenance-app .sidenav-container {
+    // Ensure full width container for proper backdrop
+    width: 100vw;
+    max-width: 100%;
+    overflow-x: hidden;
+    
+    // Backdrop styles for mobile
+    .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
+      background-color: rgba(0, 0, 0, 0.6);
+    }
+  }
+  
+  .maintenance-app .sidenav {
+    width: 280px;
+    max-width: 85vw; // Prevent sidenav from being too wide on very small screens
+    
+    &.mat-drawer-over {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      height: 100vh !important;
+      z-index: 1001 !important;
+    }
+  }
+  
+  .maintenance-app mat-sidenav-content {
+    .main-content {
+      padding: 16px !important;
+    }
+  }
+}
+
+// Ensure sidenav backdrop on mobile
+@media (max-width: 599px) {
+  .maintenance-app .sidenav {
+    width: 260px;
   }
 }

@@ -1,13 +1,22 @@
 <div class="maintenance-app">
   <mat-sidenav-container class="sidenav-container">
     <!-- Sidebar Navigation -->
-    <mat-sidenav #drawer class="sidenav" fixedInViewport
+    <mat-sidenav #drawer class="sidenav" fixedInViewport 
         [attr.role]="'navigation'"
-        [mode]="'side'"
-        [opened]="true">
+        [mode]="(isHandset$ | async) ? 'over' : 'side'"
+        [opened]="!(isHandset$ | async)"
+        [disableClose]="!(isHandset$ | async)"
+        (backdropClick)="drawer.close()">
       <mat-toolbar color="primary">
         <mat-icon>build</mat-icon>
         <span class="toolbar-title">MaintenaSync</span>
+        <span class="toolbar-spacer"></span>
+        <button mat-icon-button 
+                *ngIf="isHandset$ | async"
+                (click)="drawer.close()"
+                aria-label="Close navigation">
+          <mat-icon>close</mat-icon>
+        </button>
       </mat-toolbar>
       
       <mat-nav-list>
