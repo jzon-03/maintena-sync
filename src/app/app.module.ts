@@ -14,6 +14,8 @@ import { NewTaskDialogComponent } from './components/new-task-dialog/new-task-di
 import { ScheduleComponent } from './components/schedule/schedule.component';
 import { PartsInventoryComponent } from './components/parts-inventory/parts-inventory.component';
 import { ReportsComponent } from './components/reports/reports.component';
+import { SettingsComponent } from './components/settings/settings.component';
+import { HelpComponent } from './components/help/help.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,9 @@ import { ReportsComponent } from './components/reports/reports.component';
     NewTaskDialogComponent,
     ScheduleComponent,
     PartsInventoryComponent,
-    ReportsComponent
+    ReportsComponent,
+    SettingsComponent,
+    HelpComponent
   ],
   imports: [
     BrowserModule,

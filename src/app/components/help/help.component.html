@@ -1,0 +1,259 @@
+<div class="help-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <h1>
+      <mat-icon>help_center</mat-icon>
+      Help Center
+    </h1>
+    <p class="subtitle">Find answers and learn how to use the Maintenance Management System</p>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-section">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search help topics</mat-label>
+      <input matInput [(ngModel)]="searchQuery" (keyup)="searchHelp()" 
+             placeholder="Type your question or topic...">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="action-buttons" [class.mobile]="(isHandset$ | async)">
+    <button mat-stroked-button (click)="printPage()">
+      <mat-icon>print</mat-icon>
+      Print
+    </button>
+    <button mat-stroked-button (click)="shareHelp()">
+      <mat-icon>share</mat-icon>
+      Share
+    </button>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="content-area" [class.mobile]="(isHandset$ | async)">
+    
+    <!-- Section List View -->
+    <div class="sections-view" *ngIf="!selectedSection">
+      <div class="sections-grid">
+        <mat-card class="section-card" *ngFor="let section of filteredSections" 
+                  (click)="selectSection(section.id)" 
+                  [class.clickable]="true">
+          <mat-card-content>
+            <div class="section-header">
+              <mat-icon [color]="'primary'">{{ section.icon }}</mat-icon>
+              <h3>{{ section.title }}</h3>
+            </div>
+            <p class="section-description">{{ section.description }}</p>
+            <div class="section-meta">
+              <span class="topic-count">{{ section.topics.length }} topics</span>
+              <mat-icon>arrow_forward</mat-icon>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- No Results Message -->
+      <div class="no-results" *ngIf="filteredSections.length === 0">
+        <mat-icon>search_off</mat-icon>
+        <h3>No results found</h3>
+        <p>Try adjusting your search terms or browse all help topics.</p>
+        <button mat-raised-button color="primary" (click)="searchQuery = ''; searchHelp()">
+          View All Topics
+        </button>
+      </div>
+    </div>
+
+    <!-- Topics List View -->
+    <div class="topics-view" *ngIf="selectedSection && !selectedTopic">
+      <div class="breadcrumb">
+        <button mat-button (click)="goBackToSections()">
+          <mat-icon>arrow_back</mat-icon>
+          Back to Help Topics
+        </button>
+      </div>
+
+      <div class="section-header">
+        <mat-icon [color]="'primary'">{{ getCurrentSection()?.icon }}</mat-icon>
+        <h2>{{ getCurrentSection()?.title }}</h2>
+      </div>
+      <p class="section-description">{{ getCurrentSection()?.description }}</p>
+
+      <div class="topics-list">
+        <mat-card class="topic-card" *ngFor="let topic of getCurrentSection()?.topics" 
+                  (click)="selectTopic(topic.id)"
+                  [class.clickable]="true">
+          <mat-card-content>
+            <h4>{{ topic.title }}</h4>
+            <p class="topic-preview">{{ topic.content | slice:0:150 }}...</p>
+            <div class="topic-meta">
+              <span class="step-count" *ngIf="topic.steps">{{ topic.steps.length }} steps</span>
+              <span class="tip-count" *ngIf="topic.tips">{{ topic.tips.length }} tips</span>
+              <mat-icon>arrow_forward</mat-icon>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Topic Detail View -->
+    <div class="topic-detail" *ngIf="selectedTopic">
+      <div class="breadcrumb">
+        <button mat-button (click)="goBackToSections()">
+          <mat-icon>home</mat-icon>
+          Help Topics
+        </button>
+        <mat-icon>chevron_right</mat-icon>
+        <button mat-button (click)="goBackToTopics()">
+          {{ getCurrentSection()?.title }}
+        </button>
+        <mat-icon>chevron_right</mat-icon>
+        <span>{{ getCurrentTopic()?.title }}</span>
+      </div>
+
+      <div class="topic-content">
+        <h2>{{ getCurrentTopic()?.title }}</h2>
+        <p class="topic-description">{{ getCurrentTopic()?.content }}</p>
+
+        <!-- Steps Section -->
+        <div class="steps-section" *ngIf="getCurrentTopic()?.steps">
+          <h3>
+            <mat-icon>list</mat-icon>
+            Step-by-Step Instructions
+          </h3>
+          <ol class="steps-list">
+            <li *ngFor="let step of getCurrentTopic()?.steps" class="step-item">
+              {{ step }}
+            </li>
+          </ol>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="tips-section" *ngIf="getCurrentTopic()?.tips">
+          <h3>
+            <mat-icon>lightbulb</mat-icon>
+            Helpful Tips
+          </h3>
+          <ul class="tips-list">
+            <li *ngFor="let tip of getCurrentTopic()?.tips" class="tip-item">
+              <mat-icon>check_circle</mat-icon>
+              {{ tip }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Screenshot Section -->
+        <div class="screenshot-section" *ngIf="getCurrentTopic()?.screenshot">
+          <h3>
+            <mat-icon>image</mat-icon>
+            Visual Guide
+          </h3>
+          <div class="screenshot-placeholder">
+            <mat-icon>image</mat-icon>
+            <p>Screenshot would be displayed here</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <mat-card class="faq-section" *ngIf="!selectedSection">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>quiz</mat-icon>
+        Frequently Asked Questions
+      </mat-card-title>
+      <mat-card-subtitle>Quick answers to common questions</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="faq-categories" *ngFor="let category of getFAQCategories()">
+        <h4 class="faq-category-title">{{ category }}</h4>
+        <mat-expansion-panel *ngFor="let faq of getFAQsByCategory(category)" class="faq-item">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>help_outline</mat-icon>
+              {{ faq.question }}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <p class="faq-answer">{{ faq.answer }}</p>
+        </mat-expansion-panel>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Quick Links Section -->
+  <mat-card class="quick-links-section" *ngIf="!selectedSection">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>link</mat-icon>
+        Quick Links
+      </mat-card-title>
+      <mat-card-subtitle>Jump to commonly used features</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="quick-links-grid">
+        <a mat-stroked-button routerLink="/equipment" class="quick-link">
+          <mat-icon>precision_manufacturing</mat-icon>
+          View Equipment
+        </a>
+        <a mat-stroked-button routerLink="/maintenance-tasks" class="quick-link">
+          <mat-icon>build_circle</mat-icon>
+          Maintenance Tasks
+        </a>
+        <a mat-stroked-button routerLink="/schedule" class="quick-link">
+          <mat-icon>schedule</mat-icon>
+          Schedule
+        </a>
+        <a mat-stroked-button routerLink="/inventory" class="quick-link">
+          <mat-icon>inventory_2</mat-icon>
+          Parts Inventory
+        </a>
+        <a mat-stroked-button routerLink="/reports" class="quick-link">
+          <mat-icon>analytics</mat-icon>
+          Reports
+        </a>
+        <a mat-stroked-button routerLink="/settings" class="quick-link">
+          <mat-icon>settings</mat-icon>
+          Settings
+        </a>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Support Contact -->
+  <mat-card class="support-section" *ngIf="!selectedSection">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>support_agent</mat-icon>
+        Need More Help?
+      </mat-card-title>
+      <mat-card-subtitle>Contact our support team</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="support-options">
+        <div class="support-item">
+          <mat-icon>email</mat-icon>
+          <div>
+            <h4>Email Support</h4>
+            <p>support&#64;company.com</p>
+          </div>
+        </div>
+        <div class="support-item">
+          <mat-icon>phone</mat-icon>
+          <div>
+            <h4>Phone Support</h4>
+            <p>+1 (555) 123-4567</p>
+          </div>
+        </div>
+        <div class="support-item">
+          <mat-icon>schedule</mat-icon>
+          <div>
+            <h4>Support Hours</h4>
+            <p>Monday - Friday, 8:00 AM - 6:00 PM EST</p>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
