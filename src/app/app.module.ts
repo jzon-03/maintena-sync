@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { LayoutModule } from '@angular/cdk/layout';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -13,6 +13,7 @@ import { MaintenanceTasksComponent } from './components/maintenance-tasks/mainte
 import { NewTaskDialogComponent } from './components/new-task-dialog/new-task-dialog.component';
 import { ScheduleComponent } from './components/schedule/schedule.component';
 import { PartsInventoryComponent } from './components/parts-inventory/parts-inventory.component';
+import { ReportsComponent } from './components/reports/reports.component';
 
 @NgModule({
   declarations: [
@@ -22,13 +23,15 @@ import { PartsInventoryComponent } from './components/parts-inventory/parts-inve
     MaintenanceTasksComponent,
     NewTaskDialogComponent,
     ScheduleComponent,
-    PartsInventoryComponent
+    PartsInventoryComponent,
+    ReportsComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     MaterialModule,
     ReactiveFormsModule,
+    FormsModule,
     LayoutModule
   ],
   providers: [

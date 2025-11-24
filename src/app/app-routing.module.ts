@@ -5,6 +5,7 @@ import { EquipmentComponent } from './components/equipment/equipment.component';
 import { MaintenanceTasksComponent } from './components/maintenance-tasks/maintenance-tasks.component';
 import { ScheduleComponent } from './components/schedule/schedule.component';
 import { PartsInventoryComponent } from './components/parts-inventory/parts-inventory.component';
+import { ReportsComponent } from './components/reports/reports.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,9 @@ const routes: Routes = [
   },
   {
     path: 'inventory', component: PartsInventoryComponent
+  },
+  {
+    path: 'reports', component: ReportsComponent
   }
 ];
 

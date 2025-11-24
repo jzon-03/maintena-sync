@@ -1,0 +1,285 @@
+<div class="reports-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <h2>Maintenance Reports & Analytics</h2>
+    <p class="subtitle">Comprehensive insights into your maintenance operations</p>
+  </div>
+
+  <!-- Report Controls -->
+  <mat-card class="controls-card">
+    <mat-card-content>
+      <div class="controls-grid" [class.mobile]="(isHandset$ | async)">
+        <mat-form-field appearance="outline">
+          <mat-label>Report Type</mat-label>
+          <mat-select [(value)]="selectedReportType" (selectionChange)="onReportTypeChange()">
+            <mat-option value="maintenance">Maintenance History</mat-option>
+            <mat-option value="cost">Cost Analysis</mat-option>
+            <mat-option value="efficiency">Efficiency Metrics</mat-option>
+            <mat-option value="downtime">Downtime Analysis</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Period</mat-label>
+          <mat-select [(value)]="selectedPeriod">
+            <mat-option value="week">This Week</mat-option>
+            <mat-option value="month">This Month</mat-option>
+            <mat-option value="quarter">This Quarter</mat-option>
+            <mat-option value="year">This Year</mat-option>
+            <mat-option value="custom">Custom Range</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>From Date</mat-label>
+          <input matInput [matDatepicker]="fromPicker" [(ngModel)]="dateFrom">
+          <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fromPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>To Date</mat-label>
+          <input matInput [matDatepicker]="toPicker" [(ngModel)]="dateTo">
+          <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+          <mat-datepicker #toPicker></mat-datepicker>
+        </mat-form-field>
+
+        <div class="action-buttons">
+          <button mat-raised-button color="primary" (click)="exportReport()">
+            <mat-icon>download</mat-icon>
+            Export
+          </button>
+          <button mat-stroked-button (click)="printReport()">
+            <mat-icon>print</mat-icon>
+            Print
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Key Metrics Cards -->
+  <div class="metrics-grid">
+    <mat-card class="metric-card">
+      <mat-card-content>
+        <div class="metric-header">
+          <mat-icon color="primary">attach_money</mat-icon>
+          <span class="metric-title">Total Cost</span>
+        </div>
+        <div class="metric-value">${{ totalMaintenanceCost | number:'1.0-0' }}</div>
+        <div class="metric-subtitle">This period</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="metric-card">
+      <mat-card-content>
+        <div class="metric-header">
+          <mat-icon color="accent">schedule</mat-icon>
+          <span class="metric-title">Avg. Downtime</span>
+        </div>
+        <div class="metric-value">{{ averageDowntime | number:'1.1-1' }}h</div>
+        <div class="metric-subtitle">Per maintenance task</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="metric-card">
+      <mat-card-content>
+        <div class="metric-header">
+          <mat-icon color="primary">check_circle</mat-icon>
+          <span class="metric-title">Completion Rate</span>
+        </div>
+        <div class="metric-value">{{ completionRate | number:'1.0-0' }}%</div>
+        <div class="metric-subtitle">Tasks completed on time</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="metric-card">
+      <mat-card-content>
+        <div class="metric-header">
+          <mat-icon color="accent">savings</mat-icon>
+          <span class="metric-title">Cost Savings</span>
+        </div>
+        <div class="metric-value">${{ costSavings | number:'1.0-0' }}</div>
+        <div class="metric-subtitle">From preventive maintenance</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Cost Analysis Chart -->
+  <mat-card class="chart-card" *ngIf="selectedReportType === 'maintenance' || selectedReportType === 'cost'">
+    <mat-card-header>
+      <mat-card-title>Cost Trend Analysis</mat-card-title>
+      <mat-card-subtitle>Monthly breakdown of maintenance costs</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="cost-chart">
+        <div class="chart-bars">
+          <div class="bar-item" *ngFor="let item of costAnalysisData; let i = index">
+            <div class="bar-group">
+              <div class="bar preventive" 
+                   [style.height.px]="(item.preventiveCost / 20000) * 150"
+                   matTooltip="Preventive: ${{ item.preventiveCost | number }}">
+              </div>
+              <div class="bar corrective" 
+                   [style.height.px]="(item.correctiveCost / 20000) * 150"
+                   matTooltip="Corrective: ${{ item.correctiveCost | number }}">
+              </div>
+            </div>
+            <span class="bar-label">{{ item.month }}</span>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item">
+            <div class="legend-color preventive"></div>
+            <span>Preventive Maintenance</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color corrective"></div>
+            <span>Corrective Maintenance</span>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Efficiency Metrics -->
+  <mat-card class="efficiency-card" *ngIf="selectedReportType === 'efficiency'">
+    <mat-card-header>
+      <mat-card-title>Equipment Efficiency Metrics</mat-card-title>
+      <mat-card-subtitle>Key performance indicators for your equipment</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="efficiency-grid">
+        <div class="efficiency-item" *ngFor="let metric of efficiencyMetrics">
+          <h4>{{ metric.equipmentName }}</h4>
+          <div class="metric-row">
+            <span class="metric-label">Uptime:</span>
+            <mat-chip-listbox>
+              <mat-chip [color]="getEfficiencyColor(metric.uptime, 'uptime')" selected>
+                {{ metric.uptime }}%
+              </mat-chip>
+            </mat-chip-listbox>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">MTBF:</span>
+            <mat-chip-listbox>
+              <mat-chip [color]="getEfficiencyColor(metric.mtbf, 'mtbf')" selected>
+                {{ metric.mtbf }}h
+              </mat-chip>
+            </mat-chip-listbox>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">MTTR:</span>
+            <mat-chip-listbox>
+              <mat-chip [color]="getEfficiencyColor(metric.mttr, 'mttr')" selected>
+                {{ metric.mttr }}h
+              </mat-chip>
+            </mat-chip-listbox>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Availability:</span>
+            <mat-chip-listbox>
+              <mat-chip [color]="getEfficiencyColor(metric.availability, 'availability')" selected>
+                {{ metric.availability }}%
+              </mat-chip>
+            </mat-chip-listbox>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Maintenance History Table -->
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>Maintenance History</mat-card-title>
+      <mat-card-subtitle>Detailed maintenance records</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <!-- Search Filter -->
+      <mat-form-field class="search-field" appearance="outline">
+        <mat-label>Search maintenance records</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Filter by equipment, technician, task type...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <!-- Table -->
+      <div class="table-container">
+        <table mat-table [dataSource]="maintenanceDataSource" matSort class="maintenance-table">
+
+          <ng-container matColumnDef="equipmentName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Equipment</th>
+            <td mat-cell *matCellDef="let element">
+              <div class="equipment-cell">
+                <span class="equipment-name">{{ element.equipmentName }}</span>
+                <span class="equipment-id" *ngIf="!(isHandset$ | async)">#{{ element.id }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="taskType">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Task Type</th>
+            <td mat-cell *matCellDef="let element">
+              <mat-chip-listbox>
+                <mat-chip [color]="element.taskType === 'Emergency' ? 'warn' : 
+                                   element.taskType === 'Preventive' ? 'primary' : 'accent'" 
+                         selected>
+                  {{ element.taskType }}
+                </mat-chip>
+              </mat-chip-listbox>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="completedDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+            <td mat-cell *matCellDef="let element">{{ element.completedDate | date:'short' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="technician">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Technician</th>
+            <td mat-cell *matCellDef="let element">{{ element.technician }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="duration">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Duration</th>
+            <td mat-cell *matCellDef="let element">{{ element.duration }}h</td>
+          </ng-container>
+
+          <ng-container matColumnDef="cost">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Cost</th>
+            <td mat-cell *matCellDef="let element">
+              <span class="cost-value">${{ element.cost | number:'1.0-0' }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+            <td mat-cell *matCellDef="let element">
+              <mat-chip-listbox>
+                <mat-chip [color]="element.status === 'Completed' ? 'primary' : 
+                                   element.status === 'Overdue' ? 'warn' : 'accent'" 
+                         selected>
+                  {{ element.status }}
+                </mat-chip>
+              </mat-chip-listbox>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="(isHandset$ | async) ? mobileColumns : displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: (isHandset$ | async) ? mobileColumns : displayedColumns;"></tr>
+
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
+              No maintenance records found matching the filter criteria.
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <mat-paginator [pageSizeOptions]="[5, 10, 20, 50]" 
+                     [pageSize]="10"
+                     aria-label="Select page of maintenance records">
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>
