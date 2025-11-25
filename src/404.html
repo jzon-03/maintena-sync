@@ -15,10 +15,10 @@
         (search ? search.slice(1) + '&' : '') + 
         'path=' + encodeURIComponent(path) + 
         (hash ? '&hash=' + encodeURIComponent(hash) : '');
-      window.history.replaceState(null, null, newUrl);
+      window.location.replace(newUrl);
+    } else {
+      window.location.replace('/');
     }
-    
-    window.location.href = '/';
   </script>
 </head>
 <body>

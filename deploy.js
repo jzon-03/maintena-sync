@@ -14,9 +14,9 @@ try {
   const distDir = path.join(__dirname, 'dist', 'maintena-sync', 'browser');
   fs.copyFileSync(path.join(__dirname, 'src', 'CNAME'), path.join(distDir, 'CNAME'));
   
-  // Copy 404.html file
-  console.log('📋 Copying 404.html file...');
-  fs.copyFileSync(path.join(__dirname, 'src', '404.html'), path.join(distDir, '404.html'));
+  // Copy index.html to 404.html for SPA routing
+  console.log('📋 Copying index.html to 404.html for SPA routing...');
+  fs.copyFileSync(path.join(distDir, 'index.html'), path.join(distDir, '404.html'));
   
   // Deploy to GitHub Pages
   console.log('🌐 Deploying to GitHub Pages...');
